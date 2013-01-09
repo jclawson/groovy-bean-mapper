@@ -38,7 +38,7 @@ class MappingProxy {
                 Class toType = toInstance.class.declaredFields.find {it.name == key }.type;
                 
                 if(toType != String && value.type != toType) {
-                    Mapper mapper = MapManager.getInstance().getMapper(value.type, toType);
+                    Mapper mapper = Mapping.getInstance().getMapper(value.type, toType);
                     if(mapper == null) {
                         println("No mapper for "+value.type.getSimpleName()+" to "+toType.getSimpleName());
                     } else {

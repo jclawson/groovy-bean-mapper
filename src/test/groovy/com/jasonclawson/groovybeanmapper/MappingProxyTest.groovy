@@ -33,12 +33,12 @@ class MappingProxyTest extends GroovyTestCase {
     }
 	
 	void testSomething() {
-        Mapper mapper = BeanMapper.map(Foo, Bar) {
+        Mapper mapper = Mapping.create(Foo, Bar) {
             isSet to.name2 = from.name
             to.barSub = from.sub
         };
     
-        BeanMapper.map(FooSub, BarSub) {
+        Mapping.create(FooSub, BarSub) {
             to.zipCode = from.zip
             to.street = from.street  
         };
