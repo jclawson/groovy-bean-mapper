@@ -38,6 +38,10 @@ class Mapping {
     public <T> T map(Object from, Class<T> to) {
         return getMapper(from.class, to).map(from);
     }
+	
+	public void map(Object from, Object to) {
+		getMapper(from.class, to.class).map(from, to);
+	}
     
     
     static Mapper create(Class fromClass, Class toClass, Closure closure) {

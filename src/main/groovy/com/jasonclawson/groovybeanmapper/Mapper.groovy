@@ -9,14 +9,15 @@ class Mapper {
         this.to = o.to;
     }
     
-    def map(Object instance) {
-        Object toInstance = to.type.newInstance();
-        
-        MappingContext context = new MappingContext(destinationType: to.type, sourceType: from.type, sourceInstance: instance);
-        
-        //working on syntax to apply mappings
-        to.process(context, instance, toInstance);
-        
-        return toInstance;
+    protected Object map(Object instance) {
+        Object toInstance = to.type.newInstance();        
+        map(instance, toInstance);
+		return toInstance;
     }
+	
+	protected void map(Object instance, Object toInstance) {		
+		MappingContext context = new MappingContext(destinationType: to.type, sourceType: from.type, sourceInstance: instance);
+		
+		to.process(context, instance, toInstance);
+	}
 }

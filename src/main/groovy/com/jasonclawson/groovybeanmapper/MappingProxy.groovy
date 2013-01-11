@@ -1,5 +1,9 @@
 package com.jasonclawson.groovybeanmapper
 
+import java.lang.reflect.Field
+
+import com.jasonclawson.groovybeanmapper.util.FieldUtils
+
 class MappingProxy {
 	Class<?> type;
     
@@ -14,7 +18,8 @@ class MappingProxy {
     //getter prop missing
 	def propertyMissing(String name) {
 		println("get "+name+" on "+type.getSimpleName());
-        def propType =  type.declaredFields.find {it.name == name }.type;
+		Field f = FieldUtils.getInheritedDeclaredField(name, type);
+        def propType =  f.type;
 		return new GetterProxy(name, type, propType);
 	}
 	
@@ -35,14 +40,24 @@ class MappingProxy {
                 //FIXME: check if the types are compatible... if not we need to lookup a mapper for 
                 //these types
                 
-                Class toType = toInstance.class.declaredFields.find {it.name == key }.type;
+                //Class toType = toInstance.class.declaredFields.find {it.name == key }?.type;
+				Class toType = FieldUtils.getInheritedDeclaredField(key, toInstance.class)?.type;				
+				
+				if(toType == null) {
+					println("ERROR: could not find "+key+" on "+toInstance.class.simpleName);
+					return;
+				}
                 
                 if(toType != String && value.type != toType) {
                     Mapper mapper = Mapping.getInstance().getMapper(value.type, toType);
                     if(mapper == null) {
                         println("No mapper for "+value.type.getSimpleName()+" to "+toType.getSimpleName());
                     } else {
-                        toInstance[key] = mapper.map(value.get(context, fromInstance));
+                    	def fetchedValue = value.get(context, fromInstance);
+						if(fetchedValue != null)  
+							toInstance[key] = mapper.map(fetchedValue);
+						else
+						toInstance[key] = null; //FIXME: this may not be allowed to be set to null
                     }
                     
                 } else {
