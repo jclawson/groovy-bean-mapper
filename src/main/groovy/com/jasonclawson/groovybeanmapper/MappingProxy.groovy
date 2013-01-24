@@ -32,10 +32,10 @@ class MappingProxy {
     
     
     def process(MappingContext context, Object fromInstance, Object toInstance) {
-        println("MappingProxy process fromInstance -> toInstance");
+        //println("MappingProxy process fromInstance -> toInstance");
         assert(toInstance.class == type);
         setters.each() {key, value -> 
-            if(value.shouldMap(context, fromInstance)) {
+            if(context.isFiltered(key) && value.shouldMap(context, fromInstance)) {
                 //
                 //FIXME: check if the types are compatible... if not we need to lookup a mapper for 
                 //these types
@@ -48,21 +48,26 @@ class MappingProxy {
 					return;
 				}
                 
+				Object mappedValue = null;
+				
                 if(toType != String && value.type != toType) {
                     Mapper mapper = Mapping.getInstance().getMapper(value.type, toType);
                     if(mapper == null) {
                         println("No mapper for "+value.type.getSimpleName()+" to "+toType.getSimpleName());
+						return;
                     } else {
                     	def fetchedValue = value.get(context, fromInstance);
 						if(fetchedValue != null)  
-							toInstance[key] = mapper.map(fetchedValue);
+							mappedValue = mapper.map(fetchedValue);
 						else
-						toInstance[key] = null; //FIXME: this may not be allowed to be set to null
+							mappedValue = null; //FIXME: this may not be allowed to be set to null
                     }
                     
                 } else {
-                    toInstance[key] = value.get(context, fromInstance);
+                    mappedValue = value.get(context, fromInstance);
                 }
+				
+				toInstance[key] = context.getValue(key, mappedValue);
             }
         }
     }

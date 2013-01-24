@@ -1,15 +1,16 @@
 package com.jasonclawson.groovybeanmapper
 
-import java.util.Map;
-
-
-import groovy.lang.Closure;
-import groovy.transform.EqualsAndHashCode;
+import groovy.transform.EqualsAndHashCode
 
 class Mapping {
     private Map<MappingKey, Mapper> mappers = new HashMap();
     
-    private Mapping(){}
+    private Mapping(){
+		
+		createAndRegisterConverter(String, UUID, { instance ->
+			return UUID.fromString(instance);
+		});
+	}
     
     static class SingletonHolder {
         static final Mapping INSTANCE = new Mapping();
@@ -42,7 +43,27 @@ class Mapping {
 	public void map(Object from, Object to) {
 		getMapper(from.class, to.class).map(from, to);
 	}
+	
+	/**
+	 * 
+	 * @param filteredProperties - list of mappings you want applied (these should be in from) and only work on the first level
+	 * @param from
+	 * @param to
+	 * @return
+	 */
+	public <T> T map(List<String> filteredProperties, Map<String, Object> overrides, Object from, Class<T> to) {
+		//copy from "Map" to a new from "Instance" 
+		getMapper(from.class, to).mapFiltered(from, filteredProperties, overrides);
+	}
     
+	private void createAndRegisterConverter(Class fromClass, Class toClass, Closure closure) {		 
+		 Mapper mapper = new Mapper([to:null, from:null]){
+			 protected Object map(Object instance) {
+				 return closure.call(instance);
+			 }
+		 };		 
+		 registerMapping(fromClass, toClass, mapper);
+	}
     
     static Mapper create(Class fromClass, Class toClass, Closure closure) {
         def obj = [

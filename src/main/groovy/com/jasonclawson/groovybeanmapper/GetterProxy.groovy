@@ -19,7 +19,7 @@ class GetterProxy {
         this.name = name;
         this.ownerType = ownerType;
         this.type = type;
-        println("GetterProxy() for "+type.getSimpleName()+" ("+name+" on "+ownerType.getSimpleName()+")")
+        //println("GetterProxy() for "+type.getSimpleName()+" ("+name+" on "+ownerType.getSimpleName()+")")
     }
 	
 	GetterProxy(String name, Class<?> ownerType, Class<?> type, Object parentProxy) {
@@ -28,7 +28,7 @@ class GetterProxy {
 	}
     
     def propertyMissing(String name) {
-        println("get nested "+name+" on "+type.getSimpleName());
+        //println("get nested "+name+" on "+type.getSimpleName());
         //throw new RuntimeException("nested properties not supported yet");
 		
 		Field nestedField = FieldUtils.getInheritedDeclaredField(name, type);
@@ -51,13 +51,16 @@ class GetterProxy {
 			instance = parentProxy.get(context, instance);
 		}
 		
+		if(instance == null)
+			return null;
+		
 		
 //        if(type == String) {
 //            return instance;
 //        }
         
         //I think we will always return instance on the tail end
-        println("Instance: "+instance);
+        //println("Instance: "+instance);
         return instance[name];
     }
 }
