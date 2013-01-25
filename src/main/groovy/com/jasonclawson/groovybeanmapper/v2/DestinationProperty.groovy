@@ -6,12 +6,12 @@ import com.jasonclawson.groovybeanmapper.GetterProxy;
 import com.jasonclawson.groovybeanmapper.MappingContext;
 import com.jasonclawson.groovybeanmapper.util.FieldUtils;
 
-public class DestinationMappingProxy<T> {
+public class DestinationProperty<T> {
 	
 	Class<?> type;
 	def setters = new HashMap();
 	
-	public DestinationMappingProxy(Class<?> type) {
+	public DestinationProperty(Class<?> type) {
 		this.type = type;
 	}
 	

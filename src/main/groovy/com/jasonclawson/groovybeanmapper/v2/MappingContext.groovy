@@ -5,31 +5,34 @@ import java.util.Map;
 
 class MappingContext {
 	List<String> includeMapOnly;
-	Map<String, Object> valueOverrides;
+	Map<String, Object> runtimeValues;
 	
-	//TODO: implement full support for nested includes / overrides
-	private int level = 0;
+	LinkedList<String> path = new LinkedList();
 	
 	public void push(String propertyName) {
-		level++;
+		path.push(propertyName);
 	}
 	
 	public String pop() {
-		level--;
+		path.pop();
+	}
+	
+	public String getPropertyPath(String propertyName) {
+		String parent = path.join(".");
+		parent = (parent.size() == 0)?parent:parent+".";
+		return parent+propertyName;
 	}
 	
 	boolean isSkip(String key) {
-		if(includeMapOnly == null || level != 0)
-			return true;
+		if(includeMapOnly == null)
+			return false;
 		
 		return !includeMapOnly.contains(key);
 	}
 	
-	Object getValue(String name, Object value) {
-		if(valueOverrides == null || level != 0)
-			return value;
-		
-		Object v2 = valueOverrides.get(name);
-		return (v2 == null)?value:v2;
+	public Object getRuntimeValue(String name) {
+		if(runtimeValues == null)
+			return null;		
+		return runtimeValues.get(name);
 	}
 }

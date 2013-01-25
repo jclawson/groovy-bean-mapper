@@ -1,25 +1,51 @@
 package com.jasonclawson.groovybeanmapper.v2
 
-import java.util.List;
-import java.util.Map;
+import com.jasonclawson.groovybeanmapper.util.FieldUtils
 
-import com.jasonclawson.groovybeanmapper.MappingProxy;
-
-class ConfigMapper<F,T> implements Mapping<F,T> {
-	MappingProxy from;
-	MappingProxy to;
+class ConfigMapper<F,T> extends Mapper<F,T> {
+	private SourceProperty<F> from;
+	private DestinationProperty<T> to;
 	
-	public T map(F instance) {
-		// TODO Auto-generated method stub
-		return null;
+	public ConfigMapper(SourceProperty<F> from, DestinationProperty<T> to) {
+		this.from = from;
+		this.to = to;
 	}
-	public T mapFiltered(F instance, List<String> includeProperties,
-			Map<String, Object> overrides) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public T map(F instance, MappingContext context) {
+		Object toInstance = to.type.newInstance();
+		map(instance, toInstance, context);
+		return toInstance;
 	}
-	public T map(F instance, T toInstance) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public T map(F instance, T toInstance, MappingContext context) {
+		//destination has the setters (the mapping bindings)
+		to.setters.each() {propertyName, propertyMapping ->
+			String propertyPath = context.getPropertyPath(propertyName);
+			if(!context.isSkip(propertyPath) && !propertyMapping.isSkip(context, instance)) {
+				Class toType = FieldUtils.getInheritedDeclaredField(propertyName, toInstance.class)?.type;				
+				Object value = propertyMapping.get(context, instance);
+					
+				//what should we do if the value is null?  ignore the mapping... set it?
+				if(value == null) {
+					toInstance[propertyName] = null;
+					return;
+				}
+							
+				if(toType == String || toType.isAssignableFrom(value.class)) {
+					toInstance[propertyName] = value;
+				} else {
+					//the types are not compatible... we need to map them!
+					Mapper mapper = BeanMapping.getInstance().getMapper(value.class, toType);
+					if(mapper == null) {
+						println("No Mapper for "+value.class.simpleName+" to "+toType.simpleName);
+						return;
+					}
+					value = mapper.map(value, context);
+					toInstance[propertyName] = value;
+				}
+			} else {
+				println("skipped "+propertyName);
+			}
+		};
 	}
 }
