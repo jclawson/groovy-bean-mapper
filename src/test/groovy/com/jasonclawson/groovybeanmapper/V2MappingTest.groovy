@@ -1,11 +1,11 @@
-
-
 package com.jasonclawson.groovybeanmapper
 
-import groovy.transform.ToString;
+import groovy.transform.ToString
 
 import com.jasonclawson.groovybeanmapper.v2.BeanMapping
+import com.jasonclawson.groovybeanmapper.v2.Condition
 import com.jasonclawson.groovybeanmapper.v2.MapperBuilder
+import com.jasonclawson.groovybeanmapper.v2.MappingContext;
 
 class V2MappingTest extends GroovyTestCase {
 	@ToString
@@ -33,15 +33,18 @@ class V2MappingTest extends GroovyTestCase {
 		String street1
 	}
 	
-//	Closure isSet() {
-//		return { arg1, arg2 ->
-//			return true;
-//		};
-//	}
+	Condition isSet = new Condition(){
+		boolean check(MappingContext context, Object instance, String fromPropertyName, String toPropertyName) {
+			println(context.getPropertyPath(toPropertyName)+" = "+fromPropertyName+": "+instance.class);
+			return false;
+		}		
+	};
+	
+	
 	
 	void testSomething() {
 		BeanMapping.getInstance().createMapping(Foo, Bar) {
-			to.uuidString = from.uuid when isSet, hasMany
+			to.uuidString = from.uuid when(isSet);
 			to.zipCode    = from.zip
 			to.address    = from.address
 			to.something  = runtime("abc")
@@ -54,8 +57,16 @@ class V2MappingTest extends GroovyTestCase {
 		Foo foo = new Foo(uuid: UUID.randomUUID(), zip: "80222", address : new FooAddress(street:"Vassar"));
 		MapperBuilder builder = BeanMapping.getInstance().mapper(foo, Bar);
 			builder.withProperty("abc", "Jason");
+		
 		Bar bar = builder.map(foo);
 		
 		println(bar);
 	}
+	
+	void mapIt(Foo foo) {
+		MapperBuilder builder = BeanMapping.getInstance().mapper(foo, Bar);
+			builder.withProperty("abc", "Jason");
+		builder.map(foo);
+	}
+	
 }

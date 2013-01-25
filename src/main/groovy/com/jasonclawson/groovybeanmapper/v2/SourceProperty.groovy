@@ -12,7 +12,7 @@ class SourceProperty<F> {
 	Class<?> type;
 	String name;
 	
-	Closure[] conditions;
+	Predicate predicate;
 	
 	SourceProperty(Class<?> type) {
 		this.type = type;
@@ -24,9 +24,9 @@ class SourceProperty<F> {
 		this.name = name;
 	}
 	
-	SourceProperty(SourceProperty parent, String name, Class<?> type, Closure[] conditions) {
+	SourceProperty(SourceProperty parent, String name, Class<?> type, Predicate predicate) {
 		this(parent, name, type);
-		this.conditions = conditions;
+		this.predicate = predicate;
 	}
 	
 	def propertyMissing(String name) {
@@ -37,10 +37,11 @@ class SourceProperty<F> {
 	}
 	
 	def methodMissing(String name, args) {
-		println("method missing "+name+" on "+type.getSimpleName());
+		println("method missing "+name+" on "+type.getSimpleName()+" with "+args.length+" arguments");
 		Field f = FieldUtils.getInheritedDeclaredField(name, type);
 		def propType =  f.type;
-		return new SourceProperty(this, name, propType, (Closure[])args);
+		//arg[0] will be a predicate... like "when"
+		return new SourceProperty(this, name, propType, args[0]);
 	}
 	
 	public F get(MappingContext context, Object instance){		
@@ -59,13 +60,9 @@ class SourceProperty<F> {
 		return instance[name];
 	}
 	
-	public boolean isSkip(MappingContext context, Object instance) {
-		if(conditions != null) {
-			for(int i=0; i<conditions.length; i++) {
-				if(!conditions[i].call(context, instance)) {
-					return true;
-				}
-			}
+	public boolean isSkip(MappingContext context, Object instance, String fromPropertyName, String toPropertyName) {
+		if(predicate != null) {
+			return !predicate.check(context, instance, fromPropertyName, toPropertyName);
 		}
 		return false;
 	}

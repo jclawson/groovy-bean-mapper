@@ -1,7 +1,7 @@
+
 package com.jasonclawson.groovybeanmapper.v2
 
 import groovy.transform.EqualsAndHashCode
-
 
 
 
@@ -34,6 +34,9 @@ class BeanMapping {
 	protected class ConfigHelper<F,T> {
 		SourceProperty<F> from
 		DestinationProperty<T> to
+		//String when = ""; <-- used if you forget the parenthesis on when()
+		
+		//public Condition barn;
 		
 		def runtime(String key) {
 			return new RuntimeProperty(key);
@@ -49,23 +52,41 @@ class BeanMapping {
 //			};
 //		}
 		
-		def when (Object o) {
-			println("when called");
+		def propertyMissing(String name) {
+			println("get "+name+" on ConfigHelper");
+			return "test";
 		}
 		
-		def isSet () {
-			println("isset called");
-			return "value from isset"
+		def when (Object... o) {
+			println("when called");
+			return new Predicate(o[0]);
 		}
+		
+		
+		
+//		def isSet () {
+//			println("isset called");
+//			return "value from isset"
+//		}
 	}
+	
 	
 	public <F,T> void createMapping(Class<F> fromClass, Class<T> toClass, Closure closure) {
 		 def helper = new ConfigHelper(
 			from : new SourceProperty<F>(fromClass),
-			to :   new DestinationProperty<T>(toClass),
+			to :   new DestinationProperty<T>(toClass)
 		 );
+	 
+	 	helper.metaClass.barn = new Condition(){
+				boolean check(MappingContext context, Object instance, String fromPropertyName, String toPropertyName) {
+					return false;
+				}
+			};
 		 
-	 	 closure.resolveStrategy = Closure.DELEGATE_FIRST;
+	 	 //for whatever reason, this fucks everythign up... just leave it to default
+		 //closure.resolveStrategy = Closure.DELEGATE_FIRST;
+	
+		 
 		 closure.setDelegate(helper);
 		 closure.call();
 		 		 

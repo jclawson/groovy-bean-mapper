@@ -21,7 +21,7 @@ class ConfigMapper<F,T> extends Mapper<F,T> {
 		//destination has the setters (the mapping bindings)
 		to.setters.each() {propertyName, propertyMapping ->
 			String propertyPath = context.getPropertyPath(propertyName);
-			if(!context.isSkip(propertyPath) && !propertyMapping.isSkip(context, instance)) {
+			if(!context.isSkip(propertyPath) && !propertyMapping.isSkip(context, instance, propertyMapping.name, propertyName)) {
 				Class toType = FieldUtils.getInheritedDeclaredField(propertyName, toInstance.class)?.type;				
 				Object value = propertyMapping.get(context, instance);
 					

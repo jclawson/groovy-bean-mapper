@@ -2,8 +2,6 @@ package com.jasonclawson.groovybeanmapper.v2;
 
 import java.lang.reflect.Field;
 
-import com.jasonclawson.groovybeanmapper.GetterProxy;
-import com.jasonclawson.groovybeanmapper.MappingContext;
 import com.jasonclawson.groovybeanmapper.util.FieldUtils;
 
 public class DestinationProperty<T> {

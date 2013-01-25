@@ -12,7 +12,7 @@ class RuntimeProperty {
 		return context.getRuntimeValue(key);
 	}
 	
-	public boolean isSkip(MappingContext context, Object instance) {
+	public boolean isSkip(MappingContext context, Object instance, String fromPropertyName, String toPropertyName) {
 		return false;
 	}
 }
