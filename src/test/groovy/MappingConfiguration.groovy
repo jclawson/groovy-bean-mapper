@@ -1,14 +1,15 @@
-import com.jasonclawson.groovybeanmapper.Mapping
-import com.jasonclawson.groovybeanmapper.Mapper
+import com.jasonclawson.groovybeanmapper.v2.BeanMapping
 
 
 
 class MappingConfiguration {
-    public static Mapper getMapper() {
-        Mapper mapper = Mapping.create(Foo, Bar) {
+    public static BeanMapping getMapper() {
+		BeanMapping mapping = BeanMapping.getInstance();
+		
+		mapping.createMapping(Foo, Bar) {
             to.name = from.firstName
         };
     
-        return mapper;
+        return mapping;
     }
 }

@@ -1,19 +1,18 @@
 import org.junit.Test;
 
-import com.jasonclawson.groovybeanmapper.Mapper;
-import com.jasonclawson.groovybeanmapper.Mapping;
+import com.jasonclawson.groovybeanmapper.v2.BeanMapping;
 
 
 public class JavaMappingTest {
     
     @Test
     public void testMapping() {
-        Mapper mapper = MappingConfiguration.getMapper();
+        BeanMapping mapper = MappingConfiguration.getMapper();
         
         Foo foo = new Foo();
         foo.firstName = "Jenny";
         
-        Bar bar = (Bar) Mapping.getInstance().map(foo,Bar.class);
+        Bar bar = (Bar) mapper.mapper(foo,Bar.class).map(foo);
         
         System.out.println("Final mapping: "+bar.name);
         
