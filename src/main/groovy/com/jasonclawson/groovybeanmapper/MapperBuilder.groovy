@@ -9,9 +9,11 @@ public class MapperBuilder<F,T> {
 	List<String> includeOnly;
 	
 	Mapper<F, T> mapper;
+	F fromInstance;
 	
-	public MapperBuilder(Mapper<F, T> mapper) {
+	public MapperBuilder(Mapper<F, T> mapper, F fromInstance) {
 		this.mapper = mapper;
+		this.fromInstance = fromInstance;
 	}
 	
 	/**
@@ -40,13 +42,13 @@ public class MapperBuilder<F,T> {
 		return this;
 	}	
 
-	public Object map(Object instance) {
+	public Object map() {
 		MappingContext context = new MappingContext(includeMapOnly: includeOnly, runtimeValues:properties);		
-		return mapper.map(instance, context);
+		return mapper.map(fromInstance, context);
 	}
 
-	public Object map(Object instance, Object toInstance) {
+	public Object map(Object toInstance) {
 		MappingContext context = new MappingContext(includeMapOnly: includeOnly, runtimeValues:properties);		
-		return mapper.map(instance, toInstance, context);
+		return mapper.map(fromInstance, toInstance, context);
 	}
 }

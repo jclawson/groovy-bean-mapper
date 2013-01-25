@@ -12,7 +12,7 @@ public class JavaMappingTest {
         Foo foo = new Foo();
         foo.firstName = "Jenny";
         
-        Bar bar = (Bar) mapper.mapper(foo,Bar.class).map(foo);
+        Bar bar = (Bar) mapper.mapper(foo,Bar.class).map();
         
         System.out.println("Final mapping: "+bar.name);
         

@@ -54,15 +54,9 @@ class V2MappingTest extends GroovyTestCase {
 		MapperBuilder builder = BeanMapping.getInstance().mapper(foo, Bar);
 			builder.withProperty("abc", "Jason");
 		
-		Bar bar = builder.map(foo);
+		Bar bar = builder.map();
 		
 		println(bar);
-	}
-	
-	void mapIt(Foo foo) {
-		MapperBuilder builder = BeanMapping.getInstance().mapper(foo, Bar);
-			builder.withProperty("abc", "Jason");
-		builder.map(foo);
 	}
 	
 }

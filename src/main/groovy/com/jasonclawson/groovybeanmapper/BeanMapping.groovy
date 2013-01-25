@@ -107,10 +107,10 @@ class BeanMapping {
 	}
 	
 	public <F,T> MapperBuilder<F,T> mapper(F from, Class<T> to) {
-        return new MapperBuilder<F,T>(getMapper(from.class, to));
+        return new MapperBuilder<F,T>(getMapper(from.class, to), from);
     }
 	
 	public <F,T> MapperBuilder<F,T> mapper(F from, T to) {
-		return new MapperBuilder<F,T>(getMapper(from.class, to.class));
+		return new MapperBuilder<F,T>(getMapper(from.class, to.class), from);
 	} 
 }
