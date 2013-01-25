@@ -1,5 +1,5 @@
 
-package com.jasonclawson.groovybeanmapper.v2
+package com.jasonclawson.groovybeanmapper
 
 import groovy.transform.EqualsAndHashCode
 

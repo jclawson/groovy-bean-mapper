@@ -2,10 +2,6 @@ package com.jasonclawson.groovybeanmapper
 
 import groovy.transform.ToString
 
-import com.jasonclawson.groovybeanmapper.v2.BeanMapping
-import com.jasonclawson.groovybeanmapper.v2.Condition
-import com.jasonclawson.groovybeanmapper.v2.MapperBuilder
-import com.jasonclawson.groovybeanmapper.v2.MappingContext;
 
 class V2MappingTest extends GroovyTestCase {
 	@ToString

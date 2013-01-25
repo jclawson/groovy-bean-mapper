@@ -1,4 +1,4 @@
-package com.jasonclawson.groovybeanmapper.v2import java.util.List;
+package com.jasonclawson.groovybeanmapperimport java.util.List;
 import java.util.Map;
 
 

@@ -1,4 +1,4 @@
-import com.jasonclawson.groovybeanmapper.v2.BeanMapping
+import com.jasonclawson.groovybeanmapper.BeanMapping;
 
 
 
