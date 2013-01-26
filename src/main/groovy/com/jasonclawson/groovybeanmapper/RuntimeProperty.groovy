@@ -8,6 +8,10 @@ class RuntimeProperty {
 		this.key = key;
 	}
 	
+	public String _$getName() {
+		return key;
+	}
+	
 	public Object get(MappingContext context, Object instance) {
 		return context.getRuntimeValue(key);
 	}

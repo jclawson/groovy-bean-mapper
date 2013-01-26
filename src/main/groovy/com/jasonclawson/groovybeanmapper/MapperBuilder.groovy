@@ -10,10 +10,16 @@ public class MapperBuilder<F,T> {
 	
 	Mapper<F, T> mapper;
 	F fromInstance;
+	T toInstance;
 	
 	public MapperBuilder(Mapper<F, T> mapper, F fromInstance) {
 		this.mapper = mapper;
 		this.fromInstance = fromInstance;
+	}
+	
+	public MapperBuilder(Mapper<F, T> mapper, F fromInstance, T toInstance) {
+		this(mapper, fromInstance);
+		this.toInstance = toInstance;
 	}
 	
 	/**
@@ -42,13 +48,16 @@ public class MapperBuilder<F,T> {
 		return this;
 	}	
 
-	public Object map() {
+	public T map() {
 		MappingContext context = new MappingContext(includeMapOnly: includeOnly, runtimeValues:properties);		
-		return mapper.map(fromInstance, context);
+		if(toInstance == null)		
+			return mapper.map(fromInstance, context);
+		else
+			return mapper.map(fromInstance, toInstance, context);
 	}
 
-	public Object map(Object toInstance) {
-		MappingContext context = new MappingContext(includeMapOnly: includeOnly, runtimeValues:properties);		
-		return mapper.map(fromInstance, toInstance, context);
-	}
+//	public T map(Object toInstance) {
+//		MappingContext context = new MappingContext(includeMapOnly: includeOnly, runtimeValues:properties);		
+//		return mapper.map(fromInstance, toInstance, context);
+//	}
 }

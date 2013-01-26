@@ -21,17 +21,22 @@ class ConfigMapper<F,T> extends Mapper<F,T> {
 		//destination has the setters (the mapping bindings)
 		to.setters.each() {propertyName, propertyMapping ->
 			String propertyPath = context.getPropertyPath(propertyName);
-			if(!context.isSkip(propertyPath) && !propertyMapping.isSkip(context, instance, propertyMapping.name, propertyName)) {
+			if(!context.isSkip(propertyPath) && !propertyMapping.isSkip(context, instance, propertyMapping._$getName(), propertyName)) {
 				Class toType = FieldUtils.getInheritedDeclaredField(propertyName, toInstance.class)?.type;				
 				Object value = propertyMapping.get(context, instance);
 					
 				//what should we do if the value is null?  ignore the mapping... set it?
 				if(value == null) {
+					if(toType.isPrimitive()) {
+						println("WARN: cannot set "+toType+" to null.  Its a primitive.");
+						return;
+					}					
+					
 					toInstance[propertyName] = null;
 					return;
 				}
 							
-				if(toType == String || toType.isAssignableFrom(value.class)) {
+				if(toType == String || toType.isAssignableFrom(value.getClass())) {
 					toInstance[propertyName] = value;
 				} else {
 					//the types are not compatible... we need to map them!
