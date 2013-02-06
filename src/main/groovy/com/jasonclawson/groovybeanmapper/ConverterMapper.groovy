@@ -8,7 +8,7 @@ class ConverterMapper<F,T> extends Mapper<F,T> {
 	private Closure converterClosure;
 	
 	public ConverterMapper(Closure closure) {
-		this.converterClosure = converterClosure;
+		this.converterClosure = closure;
 	}
 	
 	public T map(Object instance, MappingContext context) {

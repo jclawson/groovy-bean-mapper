@@ -1,7 +1,8 @@
-
 package com.jasonclawson.groovybeanmapper
 
 import groovy.transform.EqualsAndHashCode
+
+import com.jasonclawson.groovybeanmapper.converters.StringToUuidConverter
 
 
 
@@ -20,7 +21,7 @@ class BeanMapping {
 	}
 	
 	private BeanMapping(){
-		
+		registerConverter(String, UUID, new StringToUuidConverter());
 	}
 	
 	public static BeanMapping getInstance() {
@@ -95,7 +96,7 @@ class BeanMapping {
 		 mappers.put(key, new ConfigMapper<F,T>(helper.from, helper.to));
 	}
 	
-	public void createConverter(Class fromClass, Class toClass, Closure converter) {
+	public void registerConverter(Class fromClass, Class toClass, Closure converter) {
 		def key = new MappingKey(from:fromClass, to:toClass);
 		//TODO: warn if key exists	
 		mappers.put(key, new ConverterMapper(converter));
@@ -113,4 +114,19 @@ class BeanMapping {
 	public <F,T> MapperBuilder<F,T> mapper(F from, T to) {
 		return new MapperBuilder<F,T>(getMapper(from.class, to.class), from, to);
 	} 
+	
+	/**
+	 * Use this mapper builder if you have a superclass or interface, and an instance that implements it as your target
+	 * 
+	 * TODO: instead of this, lets build a memoized Mapper finder that will look at all superclasses / super interface combinations
+	 * to try and find the mapper
+	 * 
+	 * @param from    - the from instance in which values will be sourced
+	 * @param toClass - the target type
+	 * @param to      - the target instance which will receive the mapped values
+	 * @return
+	 */
+	public <F,T> MapperBuilder<F,T> mapper(F from, Class<T> toClass, T to) {
+		return new MapperBuilder<F,T>(getMapper(from.class, toClass), from, to);
+	}
 }
